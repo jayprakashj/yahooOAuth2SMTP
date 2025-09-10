@@ -20,7 +20,7 @@ class YahooAuthController extends Controller
             'urlAuthorize'            => 'https://api.login.yahoo.com/oauth2/request_auth',
             'urlAccessToken'          => 'https://api.login.yahoo.com/oauth2/get_token',
             'urlResourceOwnerDetails' => 'https://api.login.yahoo.com/openid/v1/userinfo',
-            'scopes'                  => ['openid','email','mail-w'],
+            'scopes'                  => ['openid'],
         ]);
 
         // Request scopes needed for SMTP XOAUTH2
@@ -30,11 +30,17 @@ class YahooAuthController extends Controller
         ]);
         
         $authUrl = $provider->getAuthorizationUrl([
-            'scope' => ['openid','email','mail-w']
+            'scope' => ['openid']
         ]);
         
         // Store state for CSRF protection
         session(['oauth2state' => $provider->getState()]);
+        
+        \Log::info('Generated OAuth authorization URL', [
+            'auth_url' => $authUrl,
+            'state' => $provider->getState(),
+            'redirect_uri' => config('services.yahoo.redirect'),
+        ]);
         
         return redirect($authUrl);
     }
@@ -42,8 +48,21 @@ class YahooAuthController extends Controller
     public function getToken(Request $request)
     {
         try {
+            // Log all request parameters for debugging
+            \Log::info('OAuth callback received - Full request data', [
+                'all_params' => $request->all(),
+                'query_string' => $request->getQueryString(),
+                'url' => $request->fullUrl(),
+                'method' => $request->method(),
+            ]);
+
             // Check if we have an authorization code
             if (!$request->has('code')) {
+                \Log::error('OAuth callback missing authorization code', [
+                    'received_params' => $request->all(),
+                    'has_code' => $request->has('code'),
+                    'code_value' => $request->get('code'),
+                ]);
                 return redirect('/')->with('error', 'Authorization code not found. Please try connecting again.');
             }
 
@@ -74,7 +93,7 @@ class YahooAuthController extends Controller
                 'urlAuthorize'            => 'https://api.login.yahoo.com/oauth2/request_auth',
                 'urlAccessToken'          => 'https://api.login.yahoo.com/oauth2/get_token',
                 'urlResourceOwnerDetails' => 'https://api.login.yahoo.com/openid/v1/userinfo',
-                'scopes'                  => ['openid','email','mail-w'],
+                'scopes'                  => ['openid'],
             ]);
 
             // Exchange authorization code for access token

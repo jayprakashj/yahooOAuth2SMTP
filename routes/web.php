@@ -23,3 +23,15 @@ Route::get('/disconnect-yahoo', function () {
 });
 
 Route::get('/send-test', [MailController::class, 'sendTest']);
+
+// Debug route to test callback
+Route::get('/debug-callback', function (Illuminate\Http\Request $request) {
+    return response()->json([
+        'message' => 'Callback received successfully',
+        'all_params' => $request->all(),
+        'query_string' => $request->getQueryString(),
+        'url' => $request->fullUrl(),
+        'method' => $request->method(),
+        'headers' => $request->headers->all(),
+    ]);
+});

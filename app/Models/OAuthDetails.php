@@ -55,7 +55,7 @@ class OAuthDetails extends Model
             'urlAuthorize'            => 'https://api.login.yahoo.com/oauth2/request_auth',
             'urlAccessToken'          => 'https://api.login.yahoo.com/oauth2/get_token',
             'urlResourceOwnerDetails' => 'https://api.login.yahoo.com/openid/v1/userinfo',
-            'scopes'                  => ['openid','email','mail-w'],
+            'scopes'                  => ['openid','email'],
         ]);
         
         try {

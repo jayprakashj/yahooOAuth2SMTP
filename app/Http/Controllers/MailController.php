@@ -35,7 +35,7 @@ class MailController extends Controller
             'urlAuthorize'            => 'https://api.login.yahoo.com/oauth2/request_auth',
             'urlAccessToken'          => 'https://api.login.yahoo.com/oauth2/get_token',
             'urlResourceOwnerDetails' => 'https://api.login.yahoo.com/openid/v1/userinfo',
-            'scopes'                  => ['mail-w','openid','email'],
+            'scopes'                  => ['openid','email'],
         ]);
 
         // Build PHPMailer
